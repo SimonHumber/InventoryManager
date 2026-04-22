@@ -1,0 +1,42 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+<ul class="navbar-nav align-items-center">
+@if (SignInManager.IsSignedIn(User))
+{
+    var roles = await UserManager.GetRolesAsync(await UserManager.GetUserAsync(User) ?? new IdentityUser());
+    var role = roles.FirstOrDefault() ?? "User";
+    <li class="nav-item me-2">
+        <span class="badge rounded-pill text-bg-light">
+            <i class="bi bi-person-badge me-1"></i>@role
+        </span>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage account">
+            <i class="bi bi-person-circle"></i> @User.Identity?.Name
+        </a>
+    </li>
+    <li class="nav-item">
+        <form class="form-inline m-0" asp-area="Identity" asp-page="/Account/Logout"
+              asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+            <button type="submit" class="btn btn-sm btn-outline-light ms-2">
+                <i class="bi bi-box-arrow-right"></i> Logout
+            </button>
+        </form>
+    </li>
+}
+else
+{
+    <li class="nav-item">
+        <a class="nav-link" asp-area="Identity" asp-page="/Account/Register">
+            <i class="bi bi-person-plus"></i> Register
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" asp-area="Identity" asp-page="/Account/Login">
+            <i class="bi bi-box-arrow-in-right"></i> Login
+        </a>
+    </li>
+}
+</ul>

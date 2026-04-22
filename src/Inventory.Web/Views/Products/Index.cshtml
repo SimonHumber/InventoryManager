@@ -1,0 +1,123 @@
+@model IEnumerable<Inventory.Shared.Dtos.ProductDto>
+@using Microsoft.AspNetCore.Mvc.Rendering
+@{
+    ViewData["Title"] = "Products";
+    var search = ViewBag.Search as string;
+    var categories = ViewBag.Categories as SelectList;
+    var suppliers = ViewBag.Suppliers as SelectList;
+    var lowStock = ViewBag.LowStock as bool?;
+}
+
+<div class="page-header">
+    <div>
+        <h1>Products</h1>
+        <p class="page-subtitle">Search, filter and manage your catalogue</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-controller="Stock" asp-action="Create" class="btn btn-outline-primary">
+            <i class="bi bi-arrow-left-right"></i> Record movement
+        </a>
+        @if (User.IsInRole(IdentitySeeder.AdminRole))
+        {
+            <a asp-action="Create" class="btn btn-primary"><i class="bi bi-plus-lg"></i> New product</a>
+        }
+    </div>
+</div>
+
+<form class="filter-toolbar" method="get">
+    <div class="row g-2 align-items-end">
+        <div class="col-md-4">
+            <label class="form-label small text-muted">Search</label>
+            <div class="input-group">
+                <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                <input type="text" name="search" value="@search" class="form-control" placeholder="Name, SKU or description" />
+            </div>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label small text-muted">Category</label>
+            <select name="categoryId" class="form-select" asp-items="categories">
+                <option value="">All categories</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label small text-muted">Supplier</label>
+            <select name="supplierId" class="form-select" asp-items="suppliers">
+                <option value="">All suppliers</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <div class="form-check mt-3">
+                <input class="form-check-input" type="checkbox" id="lowStock" name="lowStock" value="true" @(lowStock == true ? "checked" : "") />
+                <label class="form-check-label small" for="lowStock">Only low stock</label>
+            </div>
+        </div>
+        <div class="col-12 d-flex gap-2">
+            <button class="btn btn-primary" type="submit"><i class="bi bi-funnel"></i> Filter</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">Reset</a>
+        </div>
+    </div>
+</form>
+
+<div class="card">
+    <div class="card-body p-0">
+        @if (!Model.Any())
+        {
+            <div class="empty-state">
+                <i class="bi bi-box"></i>
+                <p class="mb-0">No products match your filters.</p>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead>
+                        <tr>
+                            <th>SKU</th>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Supplier</th>
+                            <th class="text-end">Price</th>
+                            <th class="text-end">Stock</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var p in Model)
+                        {
+                            var low = p.QuantityInStock <= p.ReorderLevel;
+                            <tr>
+                                <td><code>@p.Sku</code></td>
+                                <td>
+                                    <div class="fw-semibold">@p.Name</div>
+                                    <div class="small text-muted">@p.Description</div>
+                                </td>
+                                <td><span class="badge-soft">@p.CategoryName</span></td>
+                                <td class="text-muted">@p.SupplierName</td>
+                                <td class="text-end fw-semibold">@p.UnitPrice.ToString("C")</td>
+                                <td class="text-end">
+                                    @if (low)
+                                    {
+                                        <span class="badge-danger-soft" title="Below reorder level">@p.QuantityInStock</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge-success-soft">@p.QuantityInStock</span>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    <a asp-action="Details" asp-route-id="@p.Id" class="btn btn-sm btn-outline-secondary"><i class="bi bi-eye"></i></a>
+                                    @if (User.IsInRole(IdentitySeeder.AdminRole))
+                                    {
+                                        <a asp-action="Edit" asp-route-id="@p.Id" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+                                        <a asp-action="Delete" asp-route-id="@p.Id" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></a>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

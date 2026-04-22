@@ -1,0 +1,61 @@
+@model Inventory.Shared.Dtos.ProductDto
+@using Microsoft.AspNetCore.Mvc.Rendering
+@{
+    var categories = ViewBag.Categories as SelectList;
+    var suppliers = ViewBag.Suppliers as SelectList;
+}
+
+<div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+<input type="hidden" asp-for="Id" />
+<input type="hidden" asp-for="CreatedAt" />
+
+<div class="row g-3">
+    <div class="col-md-4">
+        <label asp-for="Sku" class="form-label">SKU</label>
+        <input asp-for="Sku" class="form-control" placeholder="e.g. LAP-001" />
+        <span asp-validation-for="Sku" class="text-danger small"></span>
+    </div>
+    <div class="col-md-8">
+        <label asp-for="Name" class="form-label"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger small"></span>
+    </div>
+    <div class="col-12">
+        <label asp-for="Description" class="form-label"></label>
+        <textarea asp-for="Description" class="form-control" rows="2"></textarea>
+        <span asp-validation-for="Description" class="text-danger small"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="CategoryId" class="form-label">Category</label>
+        <select asp-for="CategoryId" asp-items="categories" class="form-select">
+            <option value="">-- Select category --</option>
+        </select>
+        <span asp-validation-for="CategoryId" class="text-danger small"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="SupplierId" class="form-label">Supplier</label>
+        <select asp-for="SupplierId" asp-items="suppliers" class="form-select">
+            <option value="">-- Select supplier --</option>
+        </select>
+        <span asp-validation-for="SupplierId" class="text-danger small"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="UnitPrice" class="form-label">Unit price</label>
+        <div class="input-group">
+            <span class="input-group-text">$</span>
+            <input asp-for="UnitPrice" class="form-control" type="number" step="0.01" min="0" />
+        </div>
+        <span asp-validation-for="UnitPrice" class="text-danger small"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="QuantityInStock" class="form-label">Quantity in stock</label>
+        <input asp-for="QuantityInStock" class="form-control" type="number" min="0" />
+        <span asp-validation-for="QuantityInStock" class="text-danger small"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="ReorderLevel" class="form-label">Reorder level</label>
+        <input asp-for="ReorderLevel" class="form-control" type="number" min="0" />
+        <span asp-validation-for="ReorderLevel" class="text-danger small"></span>
+    </div>
+</div>

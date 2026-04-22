@@ -1,0 +1,31 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: src/Inventory.Api/Dockerfile
+    ports:
+      - "5163:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__DefaultConnection: "Data Source=/data/inventory-api.db;Cache=Shared"
+    volumes:
+      - api-data:/data
+
+  web:
+    build:
+      context: .
+      dockerfile: src/Inventory.Web/Dockerfile
+    depends_on:
+      - api
+    ports:
+      - "5100:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__DefaultConnection: "Data Source=/data/app.db;Cache=Shared"
+      InventoryApi__BaseUrl: "http://api:8080/"
+    volumes:
+      - web-data:/data
+
+volumes:
+  api-data:
+  web-data:

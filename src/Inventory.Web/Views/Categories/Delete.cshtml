@@ -1,0 +1,35 @@
+@model Inventory.Shared.Dtos.CategoryDto
+@{
+    ViewData["Title"] = "Delete category";
+}
+
+<div class="page-header">
+    <h1>Delete category</h1>
+    <a asp-action="Index" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Back</a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <p class="lead">Are you sure you want to delete <strong>@Model.Name</strong>?</p>
+        @if (Model.ProductCount > 0)
+        {
+            <div class="alert alert-warning">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                This category has <strong>@Model.ProductCount</strong> product(s). You must reassign
+                them before deleting.
+            </div>
+        }
+        <dl class="row">
+            <dt class="col-sm-3 text-muted">Description</dt>
+            <dd class="col-sm-9">@(string.IsNullOrWhiteSpace(Model.Description) ? "—" : Model.Description)</dd>
+        </dl>
+
+        <form asp-action="Delete" method="post" class="d-inline">
+            <input type="hidden" asp-for="Id" />
+            <button type="submit" class="btn btn-danger" @(Model.ProductCount > 0 ? "disabled" : "")>
+                <i class="bi bi-trash"></i> Delete
+            </button>
+            <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+        </form>
+    </div>
+</div>

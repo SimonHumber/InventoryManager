@@ -1,0 +1,161 @@
+@model Inventory.Shared.Dtos.DashboardDto
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="page-header">
+    <div>
+        <h1>Dashboard</h1>
+        <p class="page-subtitle">Live overview of your inventory</p>
+    </div>
+    <a asp-controller="Products" asp-action="Index" class="btn btn-outline-primary">
+        <i class="bi bi-box"></i> View all products
+    </a>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="bi bi-box-seam"></i></div>
+            <div>
+                <p class="stat-label">Products</p>
+                <p class="stat-value">@Model.TotalProducts</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="stat-card">
+            <div class="stat-icon" style="background:linear-gradient(135deg,#10b981,#06b6d4);"><i class="bi bi-boxes"></i></div>
+            <div>
+                <p class="stat-label">Stock units</p>
+                <p class="stat-value">@Model.TotalStockUnits.ToString("N0")</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="stat-card">
+            <div class="stat-icon" style="background:linear-gradient(135deg,#f59e0b,#ef4444);"><i class="bi bi-exclamation-triangle"></i></div>
+            <div>
+                <p class="stat-label">Low stock</p>
+                <p class="stat-value">@Model.LowStockCount</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="stat-card">
+            <div class="stat-icon" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);"><i class="bi bi-currency-dollar"></i></div>
+            <div>
+                <p class="stat-label">Inventory value</p>
+                <p class="stat-value">@Model.InventoryValue.ToString("C0")</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-exclamation-octagon text-warning me-2"></i>Low stock products</span>
+                <span class="badge-soft">@Model.LowStockProducts.Count</span>
+            </div>
+            <div class="card-body p-0">
+                @if (!Model.LowStockProducts.Any())
+                {
+                    <div class="empty-state">
+                        <i class="bi bi-check2-circle"></i>
+                        <p class="mb-0">All products are above their reorder levels.</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Category</th>
+                                    <th class="text-end">In stock</th>
+                                    <th class="text-end">Reorder at</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var p in Model.LowStockProducts)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="fw-semibold">@p.Name</div>
+                                            <div class="small text-muted">@p.Sku</div>
+                                        </td>
+                                        <td>@p.CategoryName</td>
+                                        <td class="text-end"><span class="badge-danger-soft">@p.QuantityInStock</span></td>
+                                        <td class="text-end text-muted">@p.ReorderLevel</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-clock-history text-primary me-2"></i>Recent stock movements</span>
+                <a asp-controller="Stock" asp-action="Index" class="small text-decoration-none">View all</a>
+            </div>
+            <div class="card-body p-0">
+                @if (!Model.RecentTransactions.Any())
+                {
+                    <div class="empty-state">
+                        <i class="bi bi-inbox"></i>
+                        <p class="mb-0">No stock movements yet.</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Product</th>
+                                    <th>Type</th>
+                                    <th class="text-end">Qty</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var t in Model.RecentTransactions)
+                                {
+                                    <tr>
+                                        <td class="small text-muted">@t.OccurredAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td>
+                                        <td>
+                                            <div class="fw-semibold">@t.ProductName</div>
+                                            <div class="small text-muted">@t.ProductSku</div>
+                                        </td>
+                                        <td>
+                                            @switch (t.MovementType)
+                                            {
+                                                case StockMovementType.Inbound:
+                                                    <span class="badge-success-soft"><i class="bi bi-arrow-down-circle"></i> Inbound</span>
+                                                    break;
+                                                case StockMovementType.Outbound:
+                                                    <span class="badge-warning-soft"><i class="bi bi-arrow-up-circle"></i> Outbound</span>
+                                                    break;
+                                                default:
+                                                    <span class="badge-soft"><i class="bi bi-sliders"></i> Adjustment</span>
+                                                    break;
+                                            }
+                                        </td>
+                                        <td class="text-end fw-semibold">@t.Quantity</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

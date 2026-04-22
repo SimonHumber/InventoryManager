@@ -1,0 +1,71 @@
+﻿@{
+    ViewData["Title"] = "Welcome";
+}
+@inject Microsoft.AspNetCore.Identity.SignInManager<Microsoft.AspNetCore.Identity.IdentityUser> SignInManager
+
+<div class="hero-card mb-4">
+    <div class="row align-items-center">
+        <div class="col-lg-8">
+            <h1 class="mb-3">Inventory Manager</h1>
+            <p class="lead mb-4">
+                A modern ASP.NET Core MVC web application backed by a dedicated
+                Web API microservice, SQLite + Entity Framework Core, and
+                role-based access control with Identity.
+            </p>
+            @if (SignInManager.IsSignedIn(User))
+            {
+                <a class="btn btn-light btn-lg" asp-controller="Home" asp-action="Dashboard">
+                    <i class="bi bi-speedometer2 me-1"></i> Go to dashboard
+                </a>
+            }
+            else
+            {
+                <a class="btn btn-light btn-lg me-2" asp-area="Identity" asp-page="/Account/Login">
+                    <i class="bi bi-box-arrow-in-right me-1"></i> Sign in
+                </a>
+                <a class="btn btn-outline-light btn-lg" asp-area="Identity" asp-page="/Account/Register">
+                    <i class="bi bi-person-plus me-1"></i> Create account
+                </a>
+            }
+        </div>
+        <div class="col-lg-4 text-end d-none d-lg-block">
+            <i class="bi bi-boxes" style="font-size:8rem; opacity:0.35;"></i>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5><i class="bi bi-diagram-3 text-primary me-2"></i>MVC + Microservice</h5>
+                <p class="mb-0 text-muted">
+                    The web UI talks to a separate ASP.NET Core Web API over HTTP,
+                    cleanly decoupling presentation from domain logic.
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5><i class="bi bi-shield-lock text-primary me-2"></i>Role-Based Security</h5>
+                <p class="mb-0 text-muted">
+                    Admins manage catalogues and suppliers. Standard users browse
+                    stock and record movements.
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5><i class="bi bi-database text-primary me-2"></i>EF Core + SQLite</h5>
+                <p class="mb-0 text-muted">
+                    Migrations, relationships and seed data are managed through
+                    Entity Framework Core.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

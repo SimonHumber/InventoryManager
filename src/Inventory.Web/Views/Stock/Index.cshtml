@@ -1,0 +1,114 @@
+@model IEnumerable<Inventory.Shared.Dtos.StockTransactionDto>
+@using Microsoft.AspNetCore.Mvc.Rendering
+@{
+    ViewData["Title"] = "Stock movements";
+    var products = ViewBag.Products as SelectList;
+    var type = ViewBag.Type as StockMovementType?;
+}
+
+<div class="page-header">
+    <div>
+        <h1>Stock movements</h1>
+        <p class="page-subtitle">Inbound, outbound and adjustment transactions</p>
+    </div>
+    <a asp-action="Create" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Record movement</a>
+</div>
+
+<form class="filter-toolbar" method="get">
+    <div class="row g-2 align-items-end">
+        <div class="col-md-5">
+            <label class="form-label small text-muted">Product</label>
+            <select name="productId" class="form-select" asp-items="products">
+                <option value="">All products</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label small text-muted">Movement type</label>
+            <select name="type" class="form-select">
+                <option value="">All types</option>
+                <option value="Inbound" selected="@(type == StockMovementType.Inbound)">Inbound</option>
+                <option value="Outbound" selected="@(type == StockMovementType.Outbound)">Outbound</option>
+                <option value="Adjustment" selected="@(type == StockMovementType.Adjustment)">Adjustment</option>
+            </select>
+        </div>
+        <div class="col-auto">
+            <button class="btn btn-primary" type="submit"><i class="bi bi-funnel"></i> Filter</button>
+            <a asp-action="Index" class="btn btn-outline-secondary ms-1">Reset</a>
+        </div>
+    </div>
+</form>
+
+<div class="card">
+    <div class="card-body p-0">
+        @if (!Model.Any())
+        {
+            <div class="empty-state">
+                <i class="bi bi-arrow-left-right"></i>
+                <p class="mb-0">No stock movements found.</p>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table mb-0 align-middle">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Product</th>
+                            <th>Type</th>
+                            <th class="text-end">Quantity</th>
+                            <th>Note</th>
+                            <th>By</th>
+                            @if (User.IsInRole(IdentitySeeder.AdminRole))
+                            {
+                                <th class="text-end">Actions</th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var t in Model)
+                        {
+                            <tr>
+                                <td class="small text-muted">@t.OccurredAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td>
+                                <td>
+                                    <div class="fw-semibold">@t.ProductName</div>
+                                    <div class="small text-muted">@t.ProductSku</div>
+                                </td>
+                                <td>
+                                    @switch (t.MovementType)
+                                    {
+                                        case StockMovementType.Inbound:
+                                            <span class="badge-success-soft"><i class="bi bi-arrow-down-circle"></i> Inbound</span>
+                                            break;
+                                        case StockMovementType.Outbound:
+                                            <span class="badge-warning-soft"><i class="bi bi-arrow-up-circle"></i> Outbound</span>
+                                            break;
+                                        default:
+                                            <span class="badge-soft"><i class="bi bi-sliders"></i> Adjustment</span>
+                                            break;
+                                    }
+                                </td>
+                                <td class="text-end fw-semibold">@t.Quantity</td>
+                                <td class="text-muted">@t.Note</td>
+                                <td class="text-muted small">@t.PerformedBy</td>
+                                @if (User.IsInRole(IdentitySeeder.AdminRole))
+                                {
+                                    <td class="text-end">
+                                        <form asp-action="Delete" method="post" class="d-inline"
+                                              onsubmit="return confirm('Delete this stock movement?');">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@t.Id" />
+                                            <button class="btn btn-sm btn-outline-danger" type="submit">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

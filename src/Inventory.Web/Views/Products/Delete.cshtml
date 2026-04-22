@@ -1,0 +1,29 @@
+@model Inventory.Shared.Dtos.ProductDto
+@{
+    ViewData["Title"] = "Delete product";
+}
+
+<div class="page-header">
+    <h1>Delete product</h1>
+    <a asp-action="Index" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Back</a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <p class="lead">Delete <strong>@Model.Name</strong> (<code>@Model.Sku</code>)?</p>
+        <dl class="row">
+            <dt class="col-sm-3 text-muted">Category</dt>
+            <dd class="col-sm-9">@Model.CategoryName</dd>
+            <dt class="col-sm-3 text-muted">Stock</dt>
+            <dd class="col-sm-9">@Model.QuantityInStock</dd>
+            <dt class="col-sm-3 text-muted">Unit price</dt>
+            <dd class="col-sm-9">@Model.UnitPrice.ToString("C")</dd>
+        </dl>
+
+        <form asp-action="Delete" method="post" class="d-inline">
+            <input type="hidden" asp-for="Id" />
+            <button type="submit" class="btn btn-danger"><i class="bi bi-trash"></i> Delete</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+        </form>
+    </div>
+</div>

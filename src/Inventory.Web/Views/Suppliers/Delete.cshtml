@@ -1,0 +1,27 @@
+@model Inventory.Shared.Dtos.SupplierDto
+@{
+    ViewData["Title"] = "Delete supplier";
+}
+
+<div class="page-header">
+    <h1>Delete supplier</h1>
+    <a asp-action="Index" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Back</a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <p class="lead">Are you sure you want to delete <strong>@Model.Name</strong>?</p>
+        <dl class="row">
+            <dt class="col-sm-3 text-muted">Contact</dt>
+            <dd class="col-sm-9">@(string.IsNullOrWhiteSpace(Model.ContactName) ? "—" : Model.ContactName)</dd>
+            <dt class="col-sm-3 text-muted">Email</dt>
+            <dd class="col-sm-9">@(string.IsNullOrWhiteSpace(Model.Email) ? "—" : Model.Email)</dd>
+        </dl>
+
+        <form asp-action="Delete" method="post" class="d-inline">
+            <input type="hidden" asp-for="Id" />
+            <button type="submit" class="btn btn-danger"><i class="bi bi-trash"></i> Delete</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
