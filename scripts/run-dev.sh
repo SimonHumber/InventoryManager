@@ -18,10 +18,13 @@ cleanup() {
 }
 trap cleanup EXIT INT TERM
 
+echo "Building solution once (avoids parallel-build file lock on Inventory.Shared)..."
+dotnet build InventoryManagement.slnx -c Debug -v minimal
+
 echo "Starting Inventory.Api on $API_URL..."
 ASPNETCORE_ENVIRONMENT=Development \
     dotnet run --project src/Inventory.Api/Inventory.Api.csproj \
-    --no-launch-profile --urls "$API_URL" &
+    --no-build --no-launch-profile --urls "$API_URL" &
 API_PID=$!
 
 sleep 3
@@ -30,7 +33,7 @@ echo "Starting Inventory.Web on $WEB_URL..."
 ASPNETCORE_ENVIRONMENT=Development \
     InventoryApi__BaseUrl="$API_URL/" \
     dotnet run --project src/Inventory.Web/Inventory.Web.csproj \
-    --no-launch-profile --urls "$WEB_URL" &
+    --no-build --no-launch-profile --urls "$WEB_URL" &
 WEB_PID=$!
 
 echo ""
